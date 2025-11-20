@@ -105,8 +105,45 @@ function mysolve(model::MyValueIterationModel, problem::MyMDPProblemModel; ϵ::F
     Uold = zeros(Float64, number_of_states); # temporary storage for old value function
 
     # TODO: Implement the value iteration with convergence checking algorithm
-    throw(ErrorError("Oooops!: You need to implement the value iteration with convergence checking algorithm!"))
+        # main loop - (alternative sweep + relaxation; same initials, different output)
+    while converged == false
 
+        # grab the old values (for convergence checking) -
+        for i ∈ 1:number_of_states
+            Uold[i] = U[i];
+        end
+
+        # do a randomized Gauss–Seidel style sweep and use relaxation to change the update path -
+        max_delta = 0.0
+        λ = 0.6                      # relaxation factor (0 < λ ≤ 1)
+        order = randperm(number_of_states)  # randomized sweep order
+
+        for s_idx ∈ 1:number_of_states
+            s = order[s_idx]
+            for a ∈ 1:number_of_actions
+                tmp[a] = _lookahead(problem, U, s, a);
+            end
+            newval = maximum(tmp);
+            updated = (1 - λ)*U[s] + λ*newval   # relaxed update
+            delta = abs(updated - U[s])
+            U[s] = updated
+            if delta > max_delta
+                max_delta = delta
+            end
+        end
+
+        # increment iteration counter and check for convergence using the maximum change observed this sweep
+        counter += 1
+        if (max_delta ≤ ϵ) || counter ≥ k_max
+            converged = true;
+
+            if counter ≥ k_max
+                println("Warning: Value Iteration did not converge within the maximum number of iterations.");
+            else
+                println("Converged in ", counter, " iterations; residual = ", max_delta);
+            end
+        end
+    end
     return MyValueIterationSolution(problem, U); # wrap and return
 end
 
