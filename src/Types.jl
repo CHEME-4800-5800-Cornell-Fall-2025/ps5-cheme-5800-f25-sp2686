@@ -93,7 +93,7 @@ mutable struct MyRectangularGridWorldModel <: AbstractWorldModel
     moves::Dict{Int,Tuple{Int,Int}}
     rewards::Dict{Int,Float64}
 
-    # constructor -
+    # constructor --
     MyRectangularGridWorldModel() = new();
 end
 
