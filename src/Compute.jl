@@ -1,4 +1,4 @@
-## -- STANFORD VERSION OF VALUE ITERATION BELOW HERE -------------------------------------------------------------- ##
+## -- STANFORD VERSION OF VALUE ITERATION BELOW HERE. -------------------------------------------------------------- ##
 
 """
     _lookahead(p::MyMDPProblemModel, U::Vector{Float64}, s::Int64, a::Int64)
